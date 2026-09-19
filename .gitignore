@@ -5,6 +5,8 @@ release/
 python_embed/
 python/
 logs/
+# песочница для тестовой сборки проектов, в режиме разработки
+sandbox/
 
 # тесты
 .pytest_cache/

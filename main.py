@@ -7,10 +7,10 @@ from core import extract_services
 from core import project_builder
 from core import copy_services_to_target_dir
 from infrastructure_path_utils import get_root_dir_path
-from config import settings
 
+# для разработки поместить файлы во временную папку (чтобы не пересекаться с текущим кодом)
 exe_mode = getattr(sys, 'frozen', False)
-root_dir = get_root_dir_path()
+root_dir = get_root_dir_path() if exe_mode else get_root_dir_path() / 'sandbox'
 temp_dir = root_dir / 'temp'
 
 
@@ -28,16 +28,22 @@ async def start():
     print(f'[6/8] Перенос компонентов')
     copy_services_to_target_dir(root_dir=root_dir, temp_dir=temp_dir)
     print(f'[7/8] Очистка директории от временных файлов')
-    shutil.rmtree(temp_dir)
+    shutil.rmtree('\\\\?\\' + str(temp_dir))
     print(f'[8/8] Инициализация приложения')
-    # чтобы не повредить текущий проект случайно
-    if not exe_mode:
-        shutil.copytree(
-            src=root_dir / settings.app_repo_name,
-            dst=root_dir,  # приложение распаковывается в корень
-            dirs_exist_ok=True,
-        )
-        shutil.rmtree(root_dir / settings.app_repo_name)
+    # поиск папки сервиса
+    for file in root_dir.iterdir():
+        if not file.is_dir():
+            continue
+        if file.name.startswith('app_'):
+            shutil.copytree(
+                src=file,
+                dst=root_dir,  # приложение распаковывается в корень
+                dirs_exist_ok=True,
+            )
+            try:
+                shutil.rmtree('\\\\?\\' + str(file))
+            except Exception:  # noqa
+                pass
 
 
 if __name__ == '__main__':
