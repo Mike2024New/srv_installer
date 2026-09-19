@@ -1,0 +1,8 @@
+{
+  "app_repo_name": "app_ai_assistant",
+  "repositories_url": [
+    "https://github.com/Mike2024New/app_ai_assistant"
+  ],
+  "ensure_python_url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.12.14+20260825-x86_64-pc-windows-msvc-install_only.tar.gz",
+  "ensure_git_url": "https://github.com/git-for-windows/git/releases/download/v2.54.0.windows.1/MinGit-2.54.0-64-bit.zip"
+}
