@@ -12,7 +12,7 @@ def extract_tar(path: Path, target_dir: Path):
         tar.extractall(path=target_dir, filter='data')
 
 
-async def ensure_python(target_dir: Path) -> Path:
+async def ensure_python(target_dir: Path, queue: asyncio.Queue) -> Path:
     download = get_download_type(settings.ensure_python_url, target_dir=target_dir)
 
     portable_python = target_dir / 'python' / 'python.exe'
@@ -22,7 +22,7 @@ async def ensure_python(target_dir: Path) -> Path:
     # загрузка python
     python_tar_gz = download.target_dir / download.filename
     if not python_tar_gz.exists():
-        await file_downloader(download_list=[download])
+        await file_downloader(download_list=[download], feedback_queue=queue)
     # извлечение python
     sync_task = asyncio.create_task(
         asyncio.to_thread(

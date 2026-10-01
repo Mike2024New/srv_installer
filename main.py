@@ -28,7 +28,7 @@ async def start():
     print(f'[6/8] Перенос компонентов')
     copy_services_to_target_dir(root_dir=root_dir, temp_dir=temp_dir)
     print(f'[7/8] Очистка директории от временных файлов')
-    shutil.rmtree('\\\\?\\' + str(temp_dir))
+    shutil.rmtree('\\\\?\\' + str(temp_dir))  # \\\\?\\ - решение проблемы длинных путей .venv/... на windows 11
     print(f'[8/8] Инициализация приложения')
     # поиск папки сервиса
     for file in root_dir.iterdir():
@@ -41,7 +41,7 @@ async def start():
                 dirs_exist_ok=True,
             )
             try:
-                shutil.rmtree('\\\\?\\' + str(file))
+                shutil.rmtree('\\\\?\\' + str(file))  # \\\\?\\ - решение проблемы длинных путей .venv/... на windows 11
             except Exception:  # noqa
                 pass
 
