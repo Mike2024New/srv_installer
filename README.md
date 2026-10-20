@@ -1,17 +1,16 @@
 # SRV_INSTALLER
 
-<a href="docs/screens/1.png" target="_blank">
-  <img src="docs/screens/1.png" alt="Архитектура SVCPlatform" width="450">
+<a href="docs/screens/1.PNG" target="_blank">
+  <img src="docs/screens/1.PNG" alt="Архитектура SVCPlatform" width="450">
 </a>
 
-<a href="docs/screens/3.png" target="_blank">
-  <img src="docs/screens/3.png" alt="Архитектура SVCPlatform" width="450">
+<a href="docs/screens/3.PNG" target="_blank">
+  <img src="docs/screens/3.PNG" alt="Архитектура SVCPlatform" width="450">
 </a>
 
-<a href="docs/screens/8.png" target="_blank">
-  <img src="docs/screens/8.png" alt="Архитектура SVCPlatform" width="450">
+<a href="docs/screens/8.PNG" target="_blank">
+  <img src="docs/screens/8.PNG" alt="Архитектура SVCPlatform" width="450">
 </a>
-
 
 
 > SRV_INSTALLER — это десктопный установщик для приложений, собранных по «srv-стандарту»: набора из нескольких
