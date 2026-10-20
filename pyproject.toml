@@ -1,0 +1,16 @@
+[project]
+name = "srv-installer"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "customtkinter>=6.0.0",
+    "infrastructure-http-clients @ git+https://github.com/Mike2024New/infrastructure2.git@main#subdirectory=packages/infrastructure_http_clients",
+    "infrastructure-path-utils @ git+https://github.com/Mike2024New/infrastructure2.git@main#subdirectory=packages/infrastructure_path_utils",
+    "infrastructure-settings-manager @ git+https://github.com/Mike2024New/infrastructure2.git@main#subdirectory=packages/infrastructure_settings_manager",
+    "infrastructure-builder @ git+https://github.com/Mike2024New/infrastructure2.git@main#subdirectory=packages/infrastructure_builder",
+    "infrastructure-log-utils @ git+https://github.com/Mike2024New/infrastructure2.git@main#subdirectory=packages/infrastructure_log_utils",
+    "infrastructure-cli-utils @ git+https://github.com/Mike2024New/infrastructure2.git@main#subdirectory=packages/infrastructure_cli_utils",
+    "pyshortcuts>=1.9.11",
+]
