@@ -1,5 +1,7 @@
 {
   "app_name": "app_ai_assistant",
+  "download_attempts": 10,
+  "download_attempts_interval_sec": 5.0,
   "main_srv_dirname": "app_ai_assistant",
   "app_files": [
     "app.exe",
@@ -9,84 +11,98 @@
   ],
   "assets": [
     {
+      "ignore": false,
       "del_root_folder": true,
       "label": "python_portable.tar.gz",
       "relative_path_file": "utils/python/cpython-3.12.14+20260825-x86_64-pc-windows-msvc-install_only.tar.gz",
       "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.12.14+20260825-x86_64-pc-windows-msvc-install_only.tar.gz"
     },
     {
+      "ignore": false,
       "del_root_folder": false,
       "label": "git_portable.zip",
       "relative_path_file": "utils/git/git_portable.zip",
       "url": "https://github.com/git-for-windows/git/releases/download/v2.54.0.windows.1/MinGit-2.54.0-64-bit.zip"
     },
     {
+      "ignore": false,
       "del_root_folder": true,
       "label": "app_ai_assistant.zip",
-      "relative_path_file": "services/app_ai_assistant/a9137250deee26304735a35c19abba498ec431f3.zip",
-      "url": "https://github.com/Mike2024New/app_ai_assistant/archive/a9137250deee26304735a35c19abba498ec431f3.zip"
+      "relative_path_file": "services/app_ai_assistant/b5e1fa93ea6ce7543a6a412ca9d6e702be8873f3.zip",
+      "url": "https://github.com/Mike2024New/app_ai_assistant/archive/b5e1fa93ea6ce7543a6a412ca9d6e702be8873f3.zip"
     },
     {
+      "ignore": false,
       "del_root_folder": true,
       "label": "srv_stt.zip",
-      "relative_path_file": "services/srv_stt/0a1a512fe7eddf5744633540760ad05c548f6543.zip",
-      "url": "https://github.com/Mike2024New/srv_stt/archive/0a1a512fe7eddf5744633540760ad05c548f6543.zip"
+      "relative_path_file": "services/srv_stt/fadf1c787ad48d7ea2c32f4d91850e80a00eebd5.zip",
+      "url": "https://github.com/Mike2024New/srv_stt/archive/fadf1c787ad48d7ea2c32f4d91850e80a00eebd5.zip"
     },
     {
+      "ignore": false,
       "del_root_folder": false,
       "label": "vosk-model-small-ru-0.22.zip",
       "relative_path_file": "services/srv_stt/resources/models/vosk-model-small-ru-0.22.zip",
       "url": "https://github.com/Mike2024New/STT_OFFLINE/releases/download/v1.1.0/vosk-model-small-ru-0.22.zip"
     },
     {
+      "ignore": false,
       "del_root_folder": false,
       "label": "faster-whisper-small/config.json",
       "relative_path_file": "services/srv_stt/resources/models/small/config.json",
       "url": "https://huggingface.co/Systran/faster-whisper-small/resolve/main/config.json"
     },
     {
+      "ignore": false,
       "del_root_folder": false,
       "label": "faster-whisper-small/tokenizer.json",
       "relative_path_file": "services/srv_stt/resources/models/small/tokenizer.json",
       "url": "https://huggingface.co/Systran/faster-whisper-small/resolve/main/tokenizer.json"
     },
     {
+      "ignore": false,
       "del_root_folder": false,
       "label": "faster-whisper-small/model.bin",
       "relative_path_file": "services/srv_stt/resources/models/small/model.bin",
       "url": "https://huggingface.co/Systran/faster-whisper-small/resolve/main/model.bin"
     },
     {
+      "ignore": false,
       "del_root_folder": false,
       "label": "faster-whisper-small/vocabulary.txt",
       "relative_path_file": "services/srv_stt/resources/models/small/vocabulary.txt",
       "url": "https://huggingface.co/Systran/faster-whisper-small/resolve/main/vocabulary.txt"
     },
     {
+      "ignore": false,
       "del_root_folder": true,
       "label": "srv_tts.zip",
-      "relative_path_file": "services/srv_tts/e15a537c05b483ca0be2a68b41838ee188b20431.zip",
-      "url": "https://github.com/Mike2024New/srv_tts/archive/e15a537c05b483ca0be2a68b41838ee188b20431.zip"
+      "relative_path_file": "services/srv_tts/b0e8d3c0ea9cfdcc8bddfdc8298024e88f06301d.zip",
+      "url": "https://github.com/Mike2024New/srv_tts/archive/b0e8d3c0ea9cfdcc8bddfdc8298024e88f06301d.zip"
     },
     {
+      "ignore": false,
       "del_root_folder": false,
       "label": "v5_5_ru.pt",
       "relative_path_file": "services/srv_tts/resources/models/v5_5_ru.pt",
       "url": "https://models.silero.ai/models/tts/ru/v5_5_ru.pt"
     },
     {
+      "ignore": false,
       "del_root_folder": false,
       "label": "v3_en.pt",
       "relative_path_file": "services/srv_tts/resources/models/v3_en.pt",
       "url": "https://models.silero.ai/models/tts/en/v3_en.pt"
     },
     {
+      "ignore": false,
       "del_root_folder": true,
       "label": "srv_llm.zip",
-      "relative_path_file": "services/srv_llm/f0655c7fc9219b8cca0963b75a6d49268dff94b3.zip",
-      "url": "https://github.com/Mike2024New/srv_llm/archive/f0655c7fc9219b8cca0963b75a6d49268dff94b3.zip"
+      "relative_path_file": "services/srv_llm/f026998f4709872ed5ea58b1bd9dc137e764bfaf.zip",
+      "url": "https://github.com/Mike2024New/srv_llm/archive/f026998f4709872ed5ea58b1bd9dc137e764bfaf.zip"
     },
     {
+      "ignore": false,
       "del_root_folder": false,
       "label": "gemma-3-4b-it-Q4_K_M.gguf",
       "relative_path_file": "services/srv_llm/resources/models/gemma-3-4b-it-Q4_K_M.gguf",

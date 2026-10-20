@@ -74,10 +74,11 @@ class MainWindowUi:
         win.geometry(f'+{x}+{y}')
         win.after(0, win.deiconify)
 
-    def _silent_exception_handler(self, exc, val, tb):  # noqa
+    def _silent_exception_handler(self, _exc, _val, _tb):  # noqa
         """Перехват ошибок элементов -> ошибки tcl (необходимая мера, в частности из-за проблемы уничтожения скроллбаров)"""
         # пока принт, потом можно реализовать логирование
-        logger.exception(f'[ tkinter_error ] {exc}\t{val}\t{tb}')
+        # logger.exception(f'[ tkinter_error ] {_exc}\t{_val}\t{_tb}')
+        pass
 
     def _body_frame_draw(self):
         """Очищаем только внутренности, не трогая сам базовый фрейм"""
@@ -91,8 +92,8 @@ class MainWindowUi:
             for widget in self._body_frame.winfo_children():
                 try:
                     widget.destroy()
-                except Exception as err:
-                    logger.exception(f'[ tkinter_error ] {err}')
+                except Exception as err:  # noqa
+                    logger.error(f'[ tkinter_error ] {err}')
         # В этой точке self._body_frame абсолютно чист, стабилен и готов принимать контент страницы
 
     def set_row_state(self, text: str, text_color: str):
