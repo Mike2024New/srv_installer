@@ -1,4 +1,5 @@
 import asyncio, threading
+import os
 from pathlib import Path
 from time import sleep
 from typing import Callable
@@ -27,6 +28,7 @@ class DownloadAssets:
         self._title = title
         self._row_state: ctk.CTkLabel | None = None
         self._scroll_frame: ctk.CTkScrollableFrame | None = None
+        self._silence_observer = False
 
         # создание задач на загрузку
         for asset in settings.assets:
@@ -37,11 +39,10 @@ class DownloadAssets:
         self._event = event
 
     async def download_files(self):
-        # Количество полных кругов (скачали -> проверили) [вынести потом в параметры]
         try:
             for i in range(settings.download_attempts):
                 # 1. Качать всё, что не 100%
-                pending = [t for t in self._download_tasks if self._feedback_dict[t.label] < 100]
+                pending = [t for t in self._download_tasks]  # вышли на 2 круг? Перекачать всё.
                 if pending:
                     await downolad_many_files(
                         root_dir=self._target_dir,
@@ -51,48 +52,44 @@ class DownloadAssets:
                         limit_tasks=4,  # одновременное количество загрузок
                     )
 
-                # 2. Проверить целостность тех, что достигли 100%
-                # файлы tar, zip критически важны, нужно проверить их целостность, без них приложение не соберется
-                for task in self._download_tasks:
-                    if self._feedback_dict[task.label] >= 100:
-                        full_path = self._target_dir / task.relative_path_file
-                        is_broken = False
+                if all(v >= 100 for v in self._feedback_dict.values()):
+                    logger.info(f"[{window_name}] Файлы загружены: {self._feedback_dict}")
 
-                        # Проверка ZIP
+                    is_corrupted = False
+                    for task in self._download_tasks:
+                        full_path = self._target_dir / task.relative_path_file
                         if full_path.suffix == '.zip':
                             try:
-                                check_zip_integrity(full_path)
+                                check_zip_integrity(path_archive=full_path)
                             except Exception:
-                                is_broken = True
-                        # Проверка TAR.GZ
+                                os.remove(full_path)
+                                self._feedback_dict[task.label] = 0.0
+                                is_corrupted = True
                         elif full_path.name.endswith('.tar.gz'):
                             try:
-                                check_tar_gz_integrity(full_path)
+                                check_tar_gz_integrity(path_archive=full_path)
                             except Exception:
-                                is_broken = True
+                                os.remove(full_path)
+                                self._feedback_dict[task.label] = 0.0
+                                is_corrupted = True
+                    if is_corrupted:
+                        logger.warning(f'Есть битые файлы, уходить на новый круг')
+                        continue
 
-                        # 3. Если битый - удалить и ставить 0%, чтобы скачался заново
-                        if is_broken:
-                            logger.warning(f"[{window_name}] Битый файл {full_path.name}, качается заново")
-                            full_path.unlink(missing_ok=True)
-                            self._feedback_dict[task.label] = 0.0
-
-                # 4. Если после проверки нет файлов меньше 100%, значит всё идеально — выход
-                if all(v >= 100 for v in self._feedback_dict.values()):
-                    logger.info(f"[{window_name}] Все файлы скачаны и проверены.")
                     if self.finish_callback:
                         self.finish_callback()
                     return  # Успех, завершаем функцию
 
-                # Если остались битые (0%), цикл пойдет на следующую попытку
-                self._row_state.after(0, lambda: self._row_state.configure(
-                    text=f'Перекачка битых файлов ({i + 1} / {attempts})...',
+                self._silence_observer = True
+                await asyncio.sleep(1)
+                self._row_state.configure(
+                    text=f'Загрузка файлов, попытка ({i + 1} / {settings.download_attempts})...',
                     text_color='gold3'
-                ))
+                )
+                logger.warning(f"[{window_name}] Загрузка файлов, попытка ({i + 1} / {settings.download_attempts}).")
                 await asyncio.sleep(settings.download_attempts_interval_sec)
+                self._silence_observer = False
 
-            # Если все 5 попыток прошли, а файлы всё еще битые
-            print(f'Ни чего не прошло....')
             self._event.set()
             await asyncio.sleep(1)
             self._row_state.after(0, lambda: self._row_state.configure(
@@ -127,10 +124,11 @@ class DownloadAssets:
                         text_color='green4'
                     ))  # noqa
                     break
-                row_state.after(0, lambda p=percent: row_state.configure(
-                    text=f'Загрузка [ {download_components_count}/{all_components_count} ]    |    {percent}%',
-                    text_color='gold3'
-                ))  # noqa
+                if not self._silence_observer:
+                    row_state.after(0, lambda p=percent: row_state.configure(
+                        text=f'Загрузка [ {download_components_count}/{all_components_count} ]    |    {percent}%',
+                        text_color='gold3'
+                    ))  # noqa
 
         threading.Thread(target=lambda: observer_thread(), daemon=True).start()
 
