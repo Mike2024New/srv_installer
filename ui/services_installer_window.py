@@ -4,8 +4,10 @@ from pathlib import Path
 from typing import Callable
 import customtkinter as ctk
 from core import installer
+from config import logger
 
 window_name = 'services_installer_window'
+
 
 class ServicesInstallerWindow:
     def __init__(
@@ -39,6 +41,7 @@ class ServicesInstallerWindow:
                     if res is None:
                         # функция в конце выполнения полезной нагрузки (например переход на новую страницу)
                         if self.finish_callback is not None:
+                            logger.info(f'[ {window_name} ][ END ] завершена сборка .exe компонентов')
                             textbox.after(0, self.finish_callback)
                         return
                     textbox.after(0, lambda r=res: textbox.insert('end', f"\n{r}"))
@@ -52,6 +55,7 @@ class ServicesInstallerWindow:
         ).start()
 
     def window(self, root: ctk.CTk, frame: ctk.CTkFrame, row_state: ctk.CTkLabel, _storage):
+        logger.info(f'[ {window_name} ][ START ] начата сборка .exe компонентов')
         if self._title:
             body_header_label = ctk.CTkLabel(frame, text=self._title)
             body_header_label.configure(font=('roboto', 18, 'bold'))

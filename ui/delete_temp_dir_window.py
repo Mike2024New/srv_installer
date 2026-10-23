@@ -43,6 +43,7 @@ class DeleteTempDirWindow:
                     row = self._queue_report.get(timeout=0.5)
                     if row is None:
                         if self.finish_callback is not None:
+                            logger.info(f'[ {window_name} ][ END ] удаление временной директории завершено')
                             textbox.after(100, self.finish_callback)
                         break
                 except queue.Empty:
@@ -54,6 +55,7 @@ class DeleteTempDirWindow:
         threading.Thread(target=lambda: observer_thread(), daemon=True).start()
 
     def window(self, root: ctk.CTk, frame: ctk.CTkFrame, row_state: ctk.CTkLabel, _storage):
+        logger.info(f'[ {window_name} ][ START ] удаление временной директории')
         if self._title:
             body_header_label = ctk.CTkLabel(frame, text=self._title)
             body_header_label.configure(font=('roboto', 18, 'bold'))

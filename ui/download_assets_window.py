@@ -6,7 +6,8 @@ from typing import Callable
 import customtkinter as ctk
 from ui.progress_bar import ProgressesBar
 from infrastructure_path_utils import get_root_dir_path, check_zip_integrity, check_tar_gz_integrity
-from infrastructure_http_clients import DownloadTask, downolad_many_files
+from infrastructure_http_clients.file_downloader_v3 import DownloadTask, downolad_many_files
+
 from config import settings, logger
 
 window_name = 'download_assets_window'
@@ -26,7 +27,9 @@ class DownloadAssets:
         self._target_dir = target_dir
         self._download_tasks: list[DownloadTask] = []
         self._title = title
+        self._root: ctk.CTk | None = None
         self._row_state: ctk.CTkLabel | None = None
+        self._frame: ctk.CTkFrame | None = None
         self._scroll_frame: ctk.CTkScrollableFrame | None = None
         self._silence_observer = False
 
@@ -35,71 +38,61 @@ class DownloadAssets:
             if not asset['ignore']:
                 self._download_tasks.append(DownloadTask.model_validate(asset))
 
-        self._feedback_dict = {dwn.label: 0.0 for dwn in self._download_tasks}
+        self._feedback_dict = {
+            dwn.label: {'progress': 0.0, 'total': 0, 'downolad': 0} for dwn in self._download_tasks
+        }
         self._event = event
 
     async def download_files(self):
         try:
-            for i in range(settings.download_attempts):
-                # 1. Качать всё, что не 100%
-                pending = [t for t in self._download_tasks]  # вышли на 2 круг? Перекачать всё.
-                if pending:
-                    await downolad_many_files(
-                        root_dir=self._target_dir,
-                        dwn_tasks=pending,
-                        feedback_dict=self._feedback_dict,
-                        event=self._event,
-                        limit_tasks=4,  # одновременное количество загрузок
-                    )
-
-                if all(v >= 100 for v in self._feedback_dict.values()):
-                    logger.info(f"[{window_name}] Файлы загружены: {self._feedback_dict}")
-
-                    is_corrupted = False
-                    for task in self._download_tasks:
-                        full_path = self._target_dir / task.relative_path_file
-                        if full_path.suffix == '.zip':
-                            try:
-                                check_zip_integrity(path_archive=full_path)
-                            except Exception:
-                                os.remove(full_path)
-                                self._feedback_dict[task.label] = 0.0
-                                is_corrupted = True
-                        elif full_path.name.endswith('.tar.gz'):
-                            try:
-                                check_tar_gz_integrity(path_archive=full_path)
-                            except Exception:
-                                os.remove(full_path)
-                                self._feedback_dict[task.label] = 0.0
-                                is_corrupted = True
-                    if is_corrupted:
-                        logger.warning(f'Есть битые файлы, уходить на новый круг')
-                        continue
-
-                    if self.finish_callback:
-                        self.finish_callback()
-                    return  # Успех, завершаем функцию
-
-                self._silence_observer = True
-                await asyncio.sleep(1)
-                self._row_state.configure(
-                    text=f'Загрузка файлов, попытка ({i + 1} / {settings.download_attempts})...',
-                    text_color='gold3'
+            def retries_callback(x):
+                x = x + 1
+                msg = f'Не все ассеты загрузились, ухожу на новый круг {x}/{settings.download_retries}.'
+                # Безопасное обновление UI из потока
+                self._root.after(0, lambda m=msg: self._row_state.configure(text=m))
+                logger.warning(
+                    f'[ {window_name} ] Не все ассеты загрузились, ухожу на новый круг {x}/{settings.download_retries}.\nСейчас загружено: {self._feedback_dict}'
                 )
-                logger.warning(f"[{window_name}] Загрузка файлов, попытка ({i + 1} / {settings.download_attempts}).")
-                await asyncio.sleep(settings.download_attempts_interval_sec)
-                self._silence_observer = False
 
-            self._event.set()
-            await asyncio.sleep(1)
-            self._row_state.after(0, lambda: self._row_state.configure(
-                text='Ошибка: интернет соединение слабое или отсутствует, попробуйте позже...', text_color='red'
-            ))
-            self._scroll_frame.destroy()
+            await downolad_many_files(
+                root_dir=self._target_dir,
+                dwn_tasks=self._download_tasks,
+                feedback_dict=self._feedback_dict,
+                event=self._event,
+                limit_tasks=4,  # одновременное количество загрузок (защита сети от перегрузки)
+                retries=settings.download_retries,  # попытки переподключения
+                retries_timeout=settings.download_retries_timeout,
+                retries_callback=retries_callback,
+                error_callback=lambda msg: logger.error(f'[ {window_name} ] Ошибка при загрузке компонентов: {msg}')
+            )
+            if self.finish_callback:
+                logger.info(
+                    f'[ {window_name} ][ end ] загрузка компонентов завершена, результат: {self._feedback_dict}'
+                )
+                self.finish_callback()
+            return  # Успех, завершаем функцию
 
         except Exception as err:
-            logger.exception(f'[{window_name}] Ошибка загрузки: {err}')
             self._event.set()
+            logger.error(
+                f'[ {window_name} ] Ошибка не все компоненты удалось загрузить. Результат: {self._feedback_dict}, текст ошибки: {err}'
+            )
+            await asyncio.sleep(1)
+
+            # Безопасное обновление UI из фонового потока
+            def show_error_ui():
+                self._row_state.configure(
+                    text='Ошибка: интернет соединение слабое или отсутствует, попробуйте позже...',
+                    text_color='red'
+                )
+                self._scroll_frame.destroy()
+                msg = 'Ошибка, интернет соединение слабое. Попробуйте позже. Загрузка файлов продолжится с того же места. \nНажмите крестик чтобы выйти.'
+                text_area = ctk.CTkTextbox(self._frame, width=550, fg_color='transparent')
+                text_area.configure(font=('roboto', 14, 'normal'), text_color='red4')
+                text_area.pack(expand=True, fill='both', padx=10, pady=(0, 5))
+                text_area.insert('1.0', msg)
+
+            self._root.after(0, show_error_ui)
 
     def download_files_callback(self):
         threading.Thread(target=lambda: asyncio.run(self.download_files()), daemon=True).start()
@@ -112,11 +105,15 @@ class DownloadAssets:
             while not self._event.is_set():
                 # подсчёт текущего процента загрузки
                 sleep(0.2)
-                feedback_dict_values = list(self._feedback_dict.values())
+                feedback_dict_values = [val['progress'] for val in self._feedback_dict.values()]
+
                 feedback_all_percents = len(feedback_dict_values) * 100
                 feedback_fact_percents = sum(feedback_dict_values)
                 percent = round((feedback_fact_percents * 100) / feedback_all_percents, 2)
-                download_components_count = len([f for f in self._feedback_dict.values() if f >= 100])
+                # подсчёт количества загруженных элементов
+                download_components_count = len(
+                    [val['progress'] for val in self._feedback_dict.values() if val['progress'] >= 100]
+                )
                 # Загрузка [2/6]  |  89.32%
                 if percent == 100:
                     row_state.after(0, lambda p=percent: row_state.configure(
@@ -134,6 +131,9 @@ class DownloadAssets:
 
     def window(self, root: ctk.CTk, frame: ctk.CTkFrame, row_state: ctk.CTkLabel, _storage: dict):
         """загрузка компонентов"""
+        logger.info(f'[ {window_name} ][ start ] начата загрузка компонентов')
+        self._frame = frame
+        self._root = root
         self._row_state = row_state
         if self._title:
             body_header_label = ctk.CTkLabel(frame, text=self._title)

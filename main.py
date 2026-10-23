@@ -83,8 +83,9 @@ if __name__ == '__main__':
         footer=True, nav_theme_switcher=True,
     )
     # начало с 1 страницы (выбор параметров установки)
-    logger.info(f'[ {window_name} ] начало установки')
+    logger.info(f'[ {window_name} ][ START ] окно установщика открыто')
     main_ui.set_page(name='license_window')
+
     license_window.finish_callback = lambda: main_ui.set_page(name='start_window')
     start_window.finish_callback = lambda: main_ui.set_page(name='download_assets_window')
     download_assets_window.finish_callback = lambda: main_ui.set_page(name='extract_files_window')
@@ -95,4 +96,4 @@ if __name__ == '__main__':
     finish_window.finish_callback = lambda: main_ui.root.destroy()
 
     main_ui.start()
-    logger.info(f'[ {window_name} ] установка завершена')
+    logger.info(f'[ {window_name} ][ END ] окно установщика закрыто')

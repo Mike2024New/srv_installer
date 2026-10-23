@@ -3,6 +3,9 @@ from pathlib import Path
 from typing import Callable
 import customtkinter as ctk
 from ui.collapsible_panel_text import CollapsiblePanel
+from config import logger
+
+window_name = 'license_window'
 
 
 class LicenseWindow:
@@ -47,6 +50,7 @@ class LicenseWindow:
         agree_checkbox.pack(expand=True, fill="x", side='left', padx=10, pady=10)
 
         def next_btn_callback():
+            logger.info(f'[ {window_name} ] Условия лицензий просмотрены.')
             if self.finish_callback is not None:
                 self.finish_callback()
 

@@ -4,6 +4,9 @@ from typing import Callable
 from queue import Queue
 import customtkinter as ctk
 from core.services_move import services_move
+from config import logger
+
+window_name = 'service_moving'
 
 
 class ServicesMovingWindow:
@@ -31,6 +34,7 @@ class ServicesMovingWindow:
                     row = self._queue_report.get(timeout=0.5)
                     if row is None:
                         if self.finish_callback is not None:
+                            logger.info(f'[ {window_name} ][ END ] перенос компонентов')
                             textbox.after(100, self.finish_callback)
                         break
                 except queue.Empty:
@@ -42,6 +46,7 @@ class ServicesMovingWindow:
         threading.Thread(target=lambda: observer_thread(), daemon=True).start()
 
     def window(self, root: ctk.CTk, frame: ctk.CTkFrame, row_state: ctk.CTkLabel, storage):
+        logger.info(f'[ {window_name} ][ START ] перенос компонентов')
         if 'target_dir' in storage:
             target_dir = Path(storage['target_dir'])
         else:

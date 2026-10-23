@@ -55,6 +55,8 @@ class ProgressesBar:
 
         for key, val in self.feedback_dict.items():
             if key in self._progress_bar_widgets:
+                if isinstance(val, dict): # для той ситуации когда это словарь и значение приходит из него
+                    val = val['progress']
                 self._progress_bar_widgets[key][0].set(val / 100)
                 if val == 100:
                     self._progress_bar_widgets[key][0].destroy()

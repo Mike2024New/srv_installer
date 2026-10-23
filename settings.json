@@ -2,6 +2,8 @@
   "app_name": "app_ai_assistant",
   "download_attempts": 10,
   "download_attempts_interval_sec": 5.0,
+  "download_retries": 10,
+  "download_retries_timeout": 5.0,
   "main_srv_dirname": "app_ai_assistant",
   "app_files": [
     "app.exe",
@@ -28,8 +30,8 @@
       "ignore": false,
       "del_root_folder": true,
       "label": "app_ai_assistant.zip",
-      "relative_path_file": "services/app_ai_assistant/6a617479a91966157807a4ff6e564e2f8595c7f0.zip",
-      "url": "https://github.com/Mike2024New/app_ai_assistant/archive/6a617479a91966157807a4ff6e564e2f8595c7f0.zip"
+      "relative_path_file": "services/app_ai_assistant/b81d6bd9f958707075bce894db0152d7eb5f7960.zip",
+      "url": "https://github.com/Mike2024New/app_ai_assistant/archive/b81d6bd9f958707075bce894db0152d7eb5f7960.zip"
     },
     {
       "ignore": false,
