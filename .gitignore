@@ -49,7 +49,7 @@ todo.txt
 info.txt
 
 # промежуточные файлы
-helper*.py
+git_updater.py
 
 # дополнительные файлы
 pids.txt

@@ -28,15 +28,15 @@
       "ignore": false,
       "del_root_folder": true,
       "label": "app_ai_assistant.zip",
-      "relative_path_file": "services/app_ai_assistant/b5e1fa93ea6ce7543a6a412ca9d6e702be8873f3.zip",
-      "url": "https://github.com/Mike2024New/app_ai_assistant/archive/b5e1fa93ea6ce7543a6a412ca9d6e702be8873f3.zip"
+      "relative_path_file": "services/app_ai_assistant/6a617479a91966157807a4ff6e564e2f8595c7f0.zip",
+      "url": "https://github.com/Mike2024New/app_ai_assistant/archive/6a617479a91966157807a4ff6e564e2f8595c7f0.zip"
     },
     {
       "ignore": false,
       "del_root_folder": true,
       "label": "srv_stt.zip",
-      "relative_path_file": "services/srv_stt/fadf1c787ad48d7ea2c32f4d91850e80a00eebd5.zip",
-      "url": "https://github.com/Mike2024New/srv_stt/archive/fadf1c787ad48d7ea2c32f4d91850e80a00eebd5.zip"
+      "relative_path_file": "services/srv_stt/fd8c5a323e38868d694e0026bb13d31130439fdb.zip",
+      "url": "https://github.com/Mike2024New/srv_stt/archive/fd8c5a323e38868d694e0026bb13d31130439fdb.zip"
     },
     {
       "ignore": false,
@@ -98,8 +98,8 @@
       "ignore": false,
       "del_root_folder": true,
       "label": "srv_llm.zip",
-      "relative_path_file": "services/srv_llm/f026998f4709872ed5ea58b1bd9dc137e764bfaf.zip",
-      "url": "https://github.com/Mike2024New/srv_llm/archive/f026998f4709872ed5ea58b1bd9dc137e764bfaf.zip"
+      "relative_path_file": "services/srv_llm/8e46b63d98aada2ef6c9c7ed471224dd2d312975.zip",
+      "url": "https://github.com/Mike2024New/srv_llm/archive/8e46b63d98aada2ef6c9c7ed471224dd2d312975.zip"
     },
     {
       "ignore": false,
