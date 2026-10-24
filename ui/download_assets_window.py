@@ -1,11 +1,10 @@
 import asyncio, threading
-import os
 from pathlib import Path
 from time import sleep
 from typing import Callable
 import customtkinter as ctk
 from ui.progress_bar import ProgressesBar
-from infrastructure_path_utils import get_root_dir_path, check_zip_integrity, check_tar_gz_integrity
+from infrastructure_path_utils import get_root_dir_path
 from infrastructure_http_clients.file_downloader_v3 import DownloadTask, downolad_many_files
 
 from config import settings, logger
@@ -35,6 +34,22 @@ class DownloadAssets:
 
         # создание задач на загрузку
         for asset in settings.assets:
+            # =========================================
+            asset_path = self._target_dir / asset['relative_path_file']
+            # для zip файлов - если они уже есть и исправные, то докачивать не нужно
+            if asset_path.exists() and asset_path.suffix == '.zip':
+                try:
+                    check_zip_integrity(asset_path)
+                    continue
+                except Exception:  # noqa
+                    os.remove(asset_path)
+            if asset_path.exists() and str(asset_path).endswith('.tar.gz'):
+                try:
+                    check_tar_gz_integrity(asset_path)
+                    continue
+                except Exception:  # noqa
+                    os.remove(asset_path)
+            # =========================================
             if not asset['ignore']:
                 self._download_tasks.append(DownloadTask.model_validate(asset))
 
@@ -45,14 +60,10 @@ class DownloadAssets:
 
     async def download_files(self):
         try:
-            def retries_callback(x):
-                x = x + 1
-                msg = f'Не все ассеты загрузились, ухожу на новый круг {x}/{settings.download_retries}.'
+            def retries_callback(msg):
                 # Безопасное обновление UI из потока
                 self._root.after(0, lambda m=msg: self._row_state.configure(text=m))
-                logger.warning(
-                    f'[ {window_name} ] Не все ассеты загрузились, ухожу на новый круг {x}/{settings.download_retries}.\nСейчас загружено: {self._feedback_dict}'
-                )
+                logger.warning(f'[ {window_name} ] {msg}')
 
             await downolad_many_files(
                 root_dir=self._target_dir,

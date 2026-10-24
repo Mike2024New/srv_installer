@@ -9,10 +9,11 @@ class Settings(BaseModel):
     download_retries_timeout: float = 5
     main_srv_dirname: str | None = None
     app_files: list[str]
+    repos: list[dict[str, str]]
     assets: list[dict[str, str | bool]]
 
 
-default_settings = Settings(app_files=[], assets=[])
+default_settings = Settings(app_files=[], repos=[], assets=[])
 
 if __name__ == '__main__':
     print(default_settings)

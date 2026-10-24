@@ -11,6 +11,24 @@
     "README.md",
     "LICENSE"
   ],
+  "repos": [
+    {
+      "url": "https://github.com/Mike2024New/app_ai_assistant",
+      "hash": "b81d6bd9f958707075bce894db0152d7eb5f7960"
+    },
+    {
+      "url": "https://github.com/Mike2024New/srv_stt",
+      "hash": "fd8c5a323e38868d694e0026bb13d31130439fdb"
+    },
+    {
+      "url": "https://github.com/Mike2024New/srv_tts",
+      "hash": "b0e8d3c0ea9cfdcc8bddfdc8298024e88f06301d"
+    },
+    {
+      "url": "https://github.com/Mike2024New/srv_llm",
+      "hash": "8e46b63d98aada2ef6c9c7ed471224dd2d312975"
+    }
+  ],
   "assets": [
     {
       "ignore": false,
@@ -25,20 +43,6 @@
       "label": "git_portable.zip",
       "relative_path_file": "utils/git/git_portable.zip",
       "url": "https://github.com/git-for-windows/git/releases/download/v2.54.0.windows.1/MinGit-2.54.0-64-bit.zip"
-    },
-    {
-      "ignore": false,
-      "del_root_folder": true,
-      "label": "app_ai_assistant.zip",
-      "relative_path_file": "services/app_ai_assistant/b81d6bd9f958707075bce894db0152d7eb5f7960.zip",
-      "url": "https://github.com/Mike2024New/app_ai_assistant/archive/b81d6bd9f958707075bce894db0152d7eb5f7960.zip"
-    },
-    {
-      "ignore": false,
-      "del_root_folder": true,
-      "label": "srv_stt.zip",
-      "relative_path_file": "services/srv_stt/fd8c5a323e38868d694e0026bb13d31130439fdb.zip",
-      "url": "https://github.com/Mike2024New/srv_stt/archive/fd8c5a323e38868d694e0026bb13d31130439fdb.zip"
     },
     {
       "ignore": false,
@@ -77,13 +81,6 @@
     },
     {
       "ignore": false,
-      "del_root_folder": true,
-      "label": "srv_tts.zip",
-      "relative_path_file": "services/srv_tts/b0e8d3c0ea9cfdcc8bddfdc8298024e88f06301d.zip",
-      "url": "https://github.com/Mike2024New/srv_tts/archive/b0e8d3c0ea9cfdcc8bddfdc8298024e88f06301d.zip"
-    },
-    {
-      "ignore": false,
       "del_root_folder": false,
       "label": "v5_5_ru.pt",
       "relative_path_file": "services/srv_tts/resources/models/v5_5_ru.pt",
@@ -95,13 +92,6 @@
       "label": "v3_en.pt",
       "relative_path_file": "services/srv_tts/resources/models/v3_en.pt",
       "url": "https://models.silero.ai/models/tts/en/v3_en.pt"
-    },
-    {
-      "ignore": false,
-      "del_root_folder": true,
-      "label": "srv_llm.zip",
-      "relative_path_file": "services/srv_llm/8e46b63d98aada2ef6c9c7ed471224dd2d312975.zip",
-      "url": "https://github.com/Mike2024New/srv_llm/archive/8e46b63d98aada2ef6c9c7ed471224dd2d312975.zip"
     },
     {
       "ignore": false,

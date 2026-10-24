@@ -2,6 +2,7 @@ import asyncio, subprocess, os
 from pathlib import Path
 from config import logger
 from infrastructure_path_utils import get_root_dir_path, find_interpreter_by_root_dir
+from config import settings
 
 # флаг Windows для скрытия консоли (которая появлялась на win11) - иначе в процессе установки будет не красиво терминал дергаться
 CREATE_NO_WINDOW = 0x08000000
@@ -77,12 +78,14 @@ async def installer(target_dir: Path, queue: asyncio.Queue, event: asyncio.Event
     # вспомогательный софт для установки
     utils_dir = target_dir / 'utils'
     services_dir = target_dir / 'services'
+    services_dir.mkdir(exist_ok=True, parents=True)
     portable_git_dir = utils_dir / 'git'
     portable_python_path = utils_dir / 'python' / 'python.exe'
     # Проверка что portable python доступен
     if not portable_python_path.exists():
         logger.error(f'[ {window_name} ] На машине отсутствует python, не удалось его скачать и установить.')
         raise RuntimeError(f'На машине отсутствует python, не удалось его скачать и установить.')
+
     logger.info(f'[ {window_name} ] Собран портативный python')
     # Установка и проверка что git установился
     os.environ["PATH"] = os.path.join(portable_git_dir, "cmd") + os.path.pathsep + os.environ["PATH"]
@@ -99,6 +102,84 @@ async def installer(target_dir: Path, queue: asyncio.Queue, event: asyncio.Event
         raise RuntimeError(f'На машине нет git, а также не удалось скачать портативную версию git.')
     logger.info(f'[ {window_name} ] Собран портативный git')
 
+    # ====================================================
+    # Новое решение с гитом. Не забыть обложить всё трейс-беками
+    tasks = []
+    for repo in settings.repos:
+        repo_url = repo['url']
+        repo_name = repo_url.split('/')[-1]
+        repo_dir = services_dir / repo_name
+        repo_dir.mkdir(exist_ok=True, parents=True)
+        logger.info(f'git init для сервиса `{repo_name}`')
+        cmd = ['git', 'init']
+        task = asyncio.create_task(
+            run(
+                cmd=cmd, cwd=repo_dir, queue=queue,
+                srv_name=repo_name,
+                event=event,
+            )
+        )
+        tasks.append(task)
+    await asyncio.gather(*tasks, return_exceptions=True)
+
+    for repo in settings.repos:
+        repo_url = repo['url']
+        repo_name = repo_url.split('/')[-1]
+        repo_dir = services_dir / repo_name
+        logger.info(f'git remote для сервиса `{repo_name}`')
+        check = await asyncio.to_thread(
+            lambda: subprocess.run(['git', 'remote'], cwd=repo_dir, capture_output=True, text=True)
+        )
+        if 'origin' not in check.stdout:
+            cmd = ['git', 'remote', 'add', 'origin', repo_url]
+        task = asyncio.create_task(
+            run(
+                cmd=cmd, cwd=repo_dir, queue=queue,
+                srv_name=repo_name,
+                event=event,
+            )
+        )
+        tasks.append(task)
+
+    await asyncio.gather(*tasks, return_exceptions=True)
+
+    for repo in settings.repos:
+        repo_url = repo['url']
+        repo_name = repo_url.split('/')[-1]
+        repo_dir = services_dir / repo_name
+        logger.info(f'git fetch origin для сервиса `{repo_name}`')
+        cmd = ['git', 'fetch', 'origin']
+        task = asyncio.create_task(
+            run(
+                cmd=cmd, cwd=repo_dir, queue=queue,
+                srv_name=repo_name,
+                event=event,
+            )
+        )
+        tasks.append(task)
+
+    await asyncio.gather(*tasks, return_exceptions=True)
+
+    tasks = []
+    for repo in settings.repos:
+        repo_url = repo['url']
+        repo_name = repo_url.split('/')[-1]
+        repo_hash = repo['hash']
+        repo_dir = services_dir / repo_name
+        logger.info(f'git checkout для сервиса `{repo_name}`')
+        cmd = ['git', 'checkout', repo_hash]
+        task = asyncio.create_task(
+            run(
+                cmd=cmd, cwd=repo_dir, queue=queue,
+                srv_name=repo_name,
+                event=event,
+            )
+        )
+        tasks.append(task)
+
+    await asyncio.gather(*tasks, return_exceptions=True)
+
+    # =====================================================
     services = [srv for srv in services_dir.iterdir()]
     # 1. Создание виртуальных окружений для сервисов
     tasks = []

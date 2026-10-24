@@ -1,5 +1,6 @@
 from infrastructure_builder import build, BuildParameters
 from infrastructure_path_utils import get_root_dir_path, create_zip_func
+from git_updater import update_settings
 
 root_dir = get_root_dir_path()
 
@@ -21,9 +22,13 @@ parameters = BuildParameters(
     ]
 )
 if __name__ == '__main__':
-    # сборка билда
+    user_input = input(f'Обновить hash комитов репозитория?(y/n): ')
+    if user_input == 'y':
+        print('обновление хешей репозитория')
+        update_settings(settings_path=root_dir / 'settings.json')
+    print('сборка билда')
     build(parameters)
-    # сборка zip
+    print('сборка zip')
     create_zip_func(
         source_dir=root_dir / 'app',  # например сборка приложения app
         target_zip=root_dir / 'win_x86_64.zip',  # выходной архив
